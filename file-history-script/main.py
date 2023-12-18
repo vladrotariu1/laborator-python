@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import datetime
 
@@ -62,13 +63,11 @@ def write_in_history(action_type, item_type, item_path, timestamp):
     now_date = datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
     history_line = f"{now_date}: {action_type} {item_type} {item_path}\n"
 
-    print(history_line)
-
     with open('actions_history.txt', 'a') as history_file:
         history_file.write(history_line)
 
 
-if __name__ == "__main__":
+def file_history_process():
     monitored_location = 'testdir/'
     current_absolute_paths_array = get_absolute_paths(monitored_location)
 
@@ -82,3 +81,13 @@ if __name__ == "__main__":
         write_actions(*diff_result.items())
 
         time.sleep(5)
+
+
+if __name__ == "__main__":
+    new_pid = os.fork()
+    if new_pid == 0:
+        file_history_process()
+    else:
+        print("Press Enter to end process")
+        input()
+        sys.exit()
